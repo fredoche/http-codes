@@ -1,0 +1,8 @@
+{
+  "name": "cad-api",
+  "buildNumber": "${build.number}",
+  "buildDate": "${git.build.time}",
+  "branch": "${git.branch}",
+  "commitId": "${git.commit.id}",
+  "commitDate": "${git.commit.time}"
+}

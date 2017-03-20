@@ -1,0 +1,155 @@
+# GeolocationFeed
+lambdaGeolocationFeedErrorAlarm:
+  Type: "AWS::CloudWatch::Alarm"
+  Properties:
+    AlarmName: lambda-geolocation-feed-error-alarm-${opt:stage}
+    Namespace: AWS/Lambda
+    MetricName: Errors
+    Dimensions:
+    - Name: FunctionName
+      Value: cad-api-${opt:stage}-geolocationFeed
+    AlarmDescription: Triggers as soon as an error happens
+    ActionsEnabled: true
+    AlarmActions: 
+     - Ref: cadLambdaProblemsSnsTopic
+    ComparisonOperator: GreaterThanOrEqualToThreshold
+    EvaluationPeriods: 1
+    Period: 60
+    Statistic: Sum
+    Threshold: 1
+lambdaGeolocationFeedThrottleAlarm:
+  Type: "AWS::CloudWatch::Alarm"
+  Properties:
+    AlarmName: lambda-geolocation-feed-throttle-alarm-${opt:stage}
+    Namespace: AWS/Lambda
+    MetricName: Throttles
+    Dimensions:
+    - Name: FunctionName
+      Value: cad-api-${opt:stage}-geolocationFeed
+    AlarmDescription: Triggers as soon as a throttle happens
+    ActionsEnabled: true
+    AlarmActions: 
+     - Ref: cadLambdaProblemsSnsTopic
+    ComparisonOperator: GreaterThanOrEqualToThreshold
+    EvaluationPeriods: 1
+    Period: 60
+    Statistic: Sum
+    Threshold: 1
+
+# GeolocationBatchFeed
+lambdaGeolocationBatchFeedErrorAlarm:
+  Type: "AWS::CloudWatch::Alarm"
+  Properties:
+    AlarmName: lambda-geolocation-batch-feed-error-alarm-${opt:stage}
+    Namespace: AWS/Lambda
+    MetricName: Errors
+    Dimensions:
+    - Name: FunctionName
+      Value: cad-api-${opt:stage}-geolocationBatchFeed
+    AlarmDescription: Triggers as soon as an error happens
+    ActionsEnabled: true
+    AlarmActions: 
+     - Ref: cadLambdaProblemsSnsTopic
+    ComparisonOperator: GreaterThanOrEqualToThreshold
+    EvaluationPeriods: 1
+    Period: 60
+    Statistic: Sum
+    Threshold: 1
+lambdaGeolocationBatchFeedThrottleAlarm:
+  Type: "AWS::CloudWatch::Alarm"
+  Properties:
+    AlarmName: lambda-geolocation-batch-feed-throttle-alarm-${opt:stage}
+    Namespace: AWS/Lambda
+    MetricName: Throttles
+    Dimensions:
+    - Name: FunctionName
+      Value: cad-api-${opt:stage}-geolocationBatchFeed
+    AlarmDescription: Triggers as soon as a throttle happens
+    ActionsEnabled: true
+    AlarmActions: 
+     - Ref: cadLambdaProblemsSnsTopic
+    ComparisonOperator: GreaterThanOrEqualToThreshold
+    EvaluationPeriods: 1
+    Period: 60
+    Statistic: Sum
+    Threshold: 1
+
+# Context
+lambdaContextErrorAlarm:
+  Type: "AWS::CloudWatch::Alarm"
+  Properties:
+    AlarmName: lambda-context-error-alarm-${opt:stage}
+    Namespace: AWS/Lambda
+    MetricName: Errors
+    Dimensions:
+    - Name: FunctionName
+      Value: cad-api-${opt:stage}-context
+    AlarmDescription: Triggers as soon as an error happens
+    ActionsEnabled: true
+    AlarmActions: 
+     - Ref: cadLambdaProblemsSnsTopic
+    ComparisonOperator: GreaterThanOrEqualToThreshold
+    EvaluationPeriods: 1
+    Period: 60
+    Statistic: Sum
+    Threshold: 1
+lambdaContextThrottleAlarm:
+  Type: "AWS::CloudWatch::Alarm"
+  Properties:
+    AlarmName: lambda-context-throttle-alarm-${opt:stage}
+    Namespace: AWS/Lambda
+    MetricName: Throttles
+    Dimensions:
+    - Name: FunctionName
+      Value: cad-api-${opt:stage}-context
+    AlarmDescription: Triggers as soon as a throttle happens
+    ActionsEnabled: true
+    AlarmActions: 
+     - Ref: cadLambdaProblemsSnsTopic
+    ComparisonOperator: GreaterThanOrEqualToThreshold
+    EvaluationPeriods: 1
+    Period: 60
+    Statistic: Sum
+    Threshold: 1
+
+apigateway5xxAlarm:
+  Type: "AWS::CloudWatch::Alarm"
+  Properties:
+    AlarmName: apigateway-5xx-alarm-${opt:stage}
+    Namespace: AWS/ApiGateway
+    MetricName: 5XXError
+    Dimensions:
+    - Name: ApiName
+      Value: ${opt:stage}-cad-api
+    - Name: Stage
+      Value: ${opt:stage}
+    AlarmDescription: Triggers as soon as an error happens
+    ActionsEnabled: true
+    AlarmActions: 
+     - Ref: cadLambdaProblemsSnsTopic
+    ComparisonOperator: GreaterThanOrEqualToThreshold
+    EvaluationPeriods: 1
+    Period: 60
+    Statistic: Sum
+    Threshold: 1
+    
+firehoseLogAlarm:
+  Type: "AWS::CloudWatch::Alarm"
+  Properties:
+    # firehose is silent when everything is fine, and outputs logs only when something is wrong
+    # errors are silent from the api side. We keep the alarm UP for a whole day not to miss it
+    AlarmName: firehose-log-alarm-${opt:stage}
+    Namespace: AWS/Logs
+    MetricName: IncomingLogEvents
+    Dimensions:
+     - Name: LogGroupName
+       Value: /aws/kinesisfirehose/${self:custom.lambdaGeolocToS3Stream}
+    AlarmDescription: Alarm ringing as soon as we have a kinesis error
+    ActionsEnabled: true
+    AlarmActions:
+     - Ref: cadLambdaProblemsSnsTopic
+    ComparisonOperator: GreaterThanOrEqualToThreshold
+    EvaluationPeriods: 1
+    Period: 86400
+    Statistic: Sum
+    Threshold: 1.0

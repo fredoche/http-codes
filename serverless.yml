@@ -1,0 +1,61 @@
+service: cad-api
+
+provider:
+  name: aws
+  runtime: java8
+  region: eu-west-1
+  timeout: 10
+  memorySize: 256
+ 
+package:
+  artifact: http-codes/target/http-codes.jar
+        
+functions:
+  #######
+  configuration:
+    handler: devoxx/serverless.api.ApiVersionGetHandler
+    role: lambdaVersionRole
+    events:
+      - http:
+          method: get
+          path: version/
+          cors: true
+  ######
+  getCodes:
+    handler: devoxx/serverless.api.UserLocationBatchPostHandler
+    role: lambdaGeolocationKinesisRole
+    environment:
+      TARGET_KINESIS_STREAM_NAME: ${self:custom.lambdaGeolocToS3Stream}
+    events:
+      - http:
+          private: true # an api key is needed
+          path: geolocation/batch
+          method: post
+          cors: true
+    ######
+  putCode:
+    handler: devoxx/serverless.api.UserLocationBatchPostHandler
+    role: lambdaGeolocationKinesisRole
+    environment:
+      TARGET_KINESIS_STREAM_NAME: ${self:custom.lambdaGeolocToS3Stream}
+    events:
+      - http:
+          private: true # an api key is needed
+          path: geolocation/batch
+          method: post
+          cors: true
+resources:
+  Resources:
+
+### Roles ####
+
+    # lambda -> logs
+    lambdaVersionRole: ${file(./serverless.d/roles.yml):lambdaVersionRole}
+    # lambda -> firehose + logs
+    lambdaGeolocationKinesisRole: ${file(./serverless.d/roles.yml):lambdaGeolocationKinesisRole}
+    # lambda -> s3 + logs
+    lambdaContextS3Role: ${file(./serverless.d/roles.yml):lambdaContextS3Role}
+    # firehose -> s3 + logs
+    kinesisGeolocationDeliveryRole: ${file(./serverless.d/roles.yml):kinesisGeolocationDeliveryRole}
+    # lambda role to fetch user usual places from elasticsearch
+    usualPlacesLambdaRole: ${file(./serverless.d/roles.yml):usualPlacesLambdaRole}
