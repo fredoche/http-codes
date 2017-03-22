@@ -8,44 +8,63 @@ provider:
   memorySize: 256
  
 package:
-  artifact: http-codes/target/http-codes.jar
+  artifact: target/http-codes.jar
+  
+custom:
+  dynamoTable: httpCodeStatistics
         
 functions:
   #######
   configuration:
-    handler: devoxx/serverless.api.ApiVersionGetHandler
-    role: lambdaVersionRole
+    handler: devoxx.serverless.api.ConfigurationGetHandler
+    role: lambdaConfigurationRole
     events:
       - http:
+          private: true
           method: get
-          path: version/
+          path: configuration/
           cors: true
   ######
   getCodes:
-    handler: devoxx/serverless.api.UserLocationBatchPostHandler
-    role: lambdaGeolocationKinesisRole
+    handler: devoxx.serverless.api.CodesStatisticsGetHandler
+    role: lambdaGetCodesRole
     environment:
-      TARGET_KINESIS_STREAM_NAME: ${self:custom.lambdaGeolocToS3Stream}
+      TARGET_DYNAMO_TABLE_NAME: ${self:custom.dynamoTable}
     events:
       - http:
-          private: true # an api key is needed
-          path: geolocation/batch
-          method: post
+          private: true
+          path: codes
+          method: get
           cors: true
     ######
   putCode:
-    handler: devoxx/serverless.api.UserLocationBatchPostHandler
-    role: lambdaGeolocationKinesisRole
+    handler: devoxx.serverless.api.CodePutHandler
+    role: lambdaPutCodeRole
     environment:
-      TARGET_KINESIS_STREAM_NAME: ${self:custom.lambdaGeolocToS3Stream}
+      TARGET_DYNAMO_TABLE_NAME: ${self:custom.dynamoTable}
     events:
       - http:
-          private: true # an api key is needed
-          path: geolocation/batch
-          method: post
+          private: true
+          path: code/{userId}
+          method: put
           cors: true
 resources:
   Resources:
+### dynamo ###
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: HttpCodeStatistics
+      AttributeDefinitions:
+      - AttributeName: Code
+        AttributeType: N
+      - AttributeName: Occurences
+        AttributeType: N
+      KeySchema:
+      - AttributeName: Code
+        KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 100
+        WriteCapacityUnits: 100
 
 ### Roles ####
 
