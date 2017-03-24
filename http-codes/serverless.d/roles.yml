@@ -1,173 +1,90 @@
- # lambda -> logs
- lambdaVersionRole:
-   Type: AWS::IAM::Role
-   Properties:
-     RoleName: lambda_version_log_role_${self:custom.stageName}
-     AssumeRolePolicyDocument:
-       Version: "2012-10-17"
-       Statement:
-         - Effect: Allow
-           Principal:
-             Service:
-               - lambda.amazonaws.com
-           Action: sts:AssumeRole
-     Policies:
-       - PolicyName: LogWriteAccess
-         PolicyDocument:
-           Version: "2012-10-17"
-           Statement:
-             - Effect: Allow # to log
-               Action:
-                 - logs:CreateLogGroup
-                 - logs:CreateLogStream
-                 - logs:PutLogEvents
-               Resource:
-                 - arn:aws:logs:eu-west-1:081664727927:log-group:/aws/lambda/*:*:*
-
- # lambda -> firehose + logs
- lambdaGeolocationKinesisRole:
-   Type: AWS::IAM::Role
-   Properties:
-     RoleName: lambda_geolocation_kinesis_role_${self:custom.stageName}
-     AssumeRolePolicyDocument:
-       Version: "2012-10-17"
-       Statement:
-         - Effect: Allow
-           Principal:
-             Service:
-               - lambda.amazonaws.com
-           Action: sts:AssumeRole
-     Policies:
-       - PolicyName: KinesisWriteAccess
-         PolicyDocument:
-           Version: "2012-10-17"
-           Statement:
-             - Effect: Allow
-               Action:
-                 - firehose:PutRecord
-                 - firehose:PutRecordBatch
-                 - firehose:DescribeDeliveryStream
-               Resource:
-                 - arn:aws:firehose:eu-west-1:081664727927:deliverystream/${self:custom.lambdaGeolocToS3Stream}
-             - Effect: Allow # to log
-               Action:
-                 - logs:CreateLogGroup
-                 - logs:CreateLogStream
-                 - logs:PutLogEvents
-               Resource:
-                 - arn:aws:logs:eu-west-1:081664727927:log-group:/aws/lambda/*:*:*
-
- # lambda -> s3 + logs
- lambdaContextS3Role:
-   Type: AWS::IAM::Role
-   Properties:
-     RoleName: lambda_context_s3_role_${self:custom.stageName}
-     AssumeRolePolicyDocument:
-       Version: "2012-10-17"
-       Statement:
-         - Effect: Allow
-           Principal:
-             Service:
-               - lambda.amazonaws.com
-           Action: sts:AssumeRole
-     Policies:
-       - PolicyName: S3WriteAccess
-         PolicyDocument:
-           Version: "2012-10-17"
-           Statement:
-             - Effect: Allow
-               Action:
-                 - s3:PutObject
-               Resource:
-                 - arn:aws:s3:::${self:custom.devoxx.bucketname}
-                 - arn:aws:s3:::${self:custom.devoxx.bucketname}/*
-             - Effect: Allow # to log
-               Action:
-                 - logs:CreateLogGroup
-                 - logs:CreateLogStream
-                 - logs:PutLogEvents
-               Resource:
-                 - arn:aws:logs:eu-west-1:081664727927:log-group:/aws/lambda/*:*:*
-
- # firehose -> s3 + logs
- kinesisGeolocationDeliveryRole:
-   Type: AWS::IAM::Role
-   Properties:
-     RoleName: kinesis_geolocation_delivery_role_${self:custom.stageName}
-     AssumeRolePolicyDocument:
-       Version: '2012-10-17'
-       Statement:
-       - Action: sts:AssumeRole
-         Effect: Allow
-         Principal:
-           Service: firehose.amazonaws.com
-     Policies:
-       - PolicyName: S3WriteAccess
-         PolicyDocument:
-           Version: '2012-10-17'
-           Statement:
-             - Effect: Allow
-               Action:
-                 - s3:AbortMultipartUpload
-                 - s3:GetBucketLocation
-                 - s3:GetObject
-                 - s3:ListBucket
-                 - s3:ListBucketMultipartUploads
-                 - s3:PutObject
-               Resource:
-                 - arn:aws:s3:::${self:custom.devoxx.bucketname}
-                 - arn:aws:s3:::${self:custom.devoxx.bucketname}/*
-             - Effect: Allow # to log
-               Action:
-                 - logs:CreateLogGroup
-                 - logs:CreateLogStream
-                 - logs:PutLogEvents
-               Resource:
-                 - arn:aws:logs:eu-west-1:081664727927:log-group:/aws/kinesisfirehose/${self:custom.lambdaGeolocToS3Stream}:log-stream:*
- # lambda role to fetch user usual places from elasticsearch
- usualPlacesLambdaRole:
-   Type: AWS::IAM::Role
-   Properties:
-     RoleName: user_usual_places_lambda_${opt:stage}
-     AssumeRolePolicyDocument:
-       Statement:
-       - Action: sts:AssumeRole
-         Effect: Allow
-         Principal:
-           Service: lambda.amazonaws.com
-       Version: '2012-10-17'
-     Policies:
-     - PolicyDocument:
-         # policy to write logs
-         Statement:
-         - Action: logs:CreateLogGroup
-           Effect: Allow
-           Resource: arn:aws:logs:eu-west-1:081664727927:*
-         - Action:
-           - logs:CreateLogStream
-           - logs:PutLogEvents
-           Effect: Allow
-           Resource:
-           - arn:aws:logs:eu-west-1:081664727927:log-group:/aws/lambda/cad-api-dev-userUsualPlaces:*:*
-         Version: '2012-10-17'
-       PolicyName: AWSLambdaBasicExecutionRole
-     - PolicyDocument:
-         # policy to query elasticsearch
-         Statement:
-         - Action:
-           - 'es:ESHttpGet'
-           - 'es:ESHttpPost'
-           - 'es:DescribeElasticsearchDomain'
-           Effect: Allow
-           Resource: arn:aws:es:eu-west-1:081664727927:domain/cad-mobility-graph-${opt:stage}/*
-         Version: '2012-10-17'
-       PolicyName: AWSLambdaReadFromElasticSearch
-     - PolicyDocument:
-         # policy to manage elasticsearch cluster
-         Statement:
-         - Action:
-           - 'es:DescribeElasticsearchDomain'
-           Effect: Allow
-           Resource: arn:aws:es:eu-west-1:081664727927:domain/cad-mobility-graph-${opt:stage}
-         Version: '2012-10-17'
-       PolicyName: AWSLambdaManageElasticSearchCluster
+lambdaConfigurationRole:
+  Type: AWS::IAM::Role
+  Properties:
+    RoleName: lambda_configuration_log_role_${self:custom.stageName}
+    AssumeRolePolicyDocument:
+      Version: "2012-10-17"
+      Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+              - lambda.amazonaws.com
+          Action: sts:AssumeRole
+    Policies:
+      - PolicyName: LogWriteAccess
+        PolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow # to log
+              Action:
+                - logs:CreateLogGroup
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+              Resource:
+                - arn:aws:logs:eu-west-1:556175839129:log-group:/aws/lambda/*:*:*
+lambdaGetCodesRole:
+  Type: AWS::IAM::Role
+  Properties:
+    RoleName: lambda_get_codes_log_role_${self:custom.stageName}
+    AssumeRolePolicyDocument:
+      Version: "2012-10-17"
+      Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+              - lambda.amazonaws.com
+          Action: sts:AssumeRole
+    Policies:
+      - PolicyName: LogWriteAccess
+        PolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow # to log
+              Action:
+                - logs:CreateLogGroup
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+              Resource:
+                - arn:aws:logs:eu-west-1:556175839129:log-group:/aws/lambda/*:*:*
+      - PolicyName: DynamoAllAccess
+        PolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow # to log
+              Action:
+                - dynamodb:*
+              Resource:
+                - arn:aws:dynamodb:eu-west-1:556175839129:table/HttpCodeStatistics
+lambdaPutCodeRole:
+  Type: AWS::IAM::Role
+  Properties:
+    RoleName: lambda_put_code_log_role_${self:custom.stageName}
+    AssumeRolePolicyDocument:
+      Version: "2012-10-17"
+      Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+              - lambda.amazonaws.com
+          Action: sts:AssumeRole
+    Policies:
+      - PolicyName: LogWriteAccess
+        PolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow # to log
+              Action:
+                - logs:CreateLogGroup
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+              Resource:
+                - arn:aws:logs:eu-west-1:556175839129:log-group:/aws/lambda/*:*:*
+      - PolicyName: DynamoAllAccess
+        PolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow # to log
+              Action:
+                - dynamodb:*
+              Resource:
+                - arn:aws:dynamodb:eu-west-1:556175839129:table/HttpCodeStatistics

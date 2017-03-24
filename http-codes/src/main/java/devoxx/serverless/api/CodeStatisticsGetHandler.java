@@ -18,11 +18,8 @@ public class CodeStatisticsGetHandler extends AbstractGetHandler {
 
     @Override
     public AwsProxyResponse doHandle(AwsProxyRequest request) throws Exception {
-
         Table table = dynamoDB.getTable("HttpCodeStatistics");
-
-        Item item = table.getItem("Code", request.getPathParameters().get("code"));
-
-        return createSuccessResponse(response);
+        Item item = table.getItem("code", request.getPathParameters().get("code"));
+        return createSuccessResponse(item.toJSON());
     }
 }

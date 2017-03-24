@@ -40,7 +40,7 @@ abstract class AbstractErrorHandler implements RequestStreamHandler {
         try {
             response = doHandle(inputStream, context);
         } catch (Exception e) {
-            logger.error(e);
+            logger.error("error in request handling: ", e);
             String errorAsJson = mapper.writeValueAsString(fromException(e));
             response = new AwsProxyResponse(500, emptyMap(), errorAsJson);
         }

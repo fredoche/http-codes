@@ -1,4 +1,4 @@
-service: cad-api
+service: http-codes-api
 
 provider:
   name: aws
@@ -11,6 +11,7 @@ package:
   artifact: target/http-codes.jar
   
 custom:
+  stageName: ${opt:stage}
   dynamoTable: httpCodeStatistics
         
 functions:
@@ -26,7 +27,7 @@ functions:
           cors: true
   ######
   getCodes:
-    handler: devoxx.serverless.api.CodesStatisticsGetHandler
+    handler: devoxx.serverless.api.CodeStatisticsGetHandler
     role: lambdaGetCodesRole
     environment:
       TARGET_DYNAMO_TABLE_NAME: ${self:custom.dynamoTable}
@@ -45,36 +46,26 @@ functions:
     events:
       - http:
           private: true
-          path: code/{userId}
+          path: code/{code}
           method: put
           cors: true
 resources:
   Resources:
 ### dynamo ###
-    Type: AWS::DynamoDB::Table
-    Properties:
-      TableName: HttpCodeStatistics
-      AttributeDefinitions:
-      - AttributeName: Code
-        AttributeType: N
-      - AttributeName: Occurences
-        AttributeType: N
-      KeySchema:
-      - AttributeName: Code
-        KeyType: HASH
-      ProvisionedThroughput:
-        ReadCapacityUnits: 100
-        WriteCapacityUnits: 100
-
+    httpCodesDynamoTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: HttpCodeStatistics
+        AttributeDefinitions:
+        - AttributeName: code
+          AttributeType: N
+        KeySchema:
+        - AttributeName: code
+          KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 100
+          WriteCapacityUnits: 100
 ### Roles ####
-
-    # lambda -> logs
-    lambdaVersionRole: ${file(./serverless.d/roles.yml):lambdaVersionRole}
-    # lambda -> firehose + logs
-    lambdaGeolocationKinesisRole: ${file(./serverless.d/roles.yml):lambdaGeolocationKinesisRole}
-    # lambda -> s3 + logs
-    lambdaContextS3Role: ${file(./serverless.d/roles.yml):lambdaContextS3Role}
-    # firehose -> s3 + logs
-    kinesisGeolocationDeliveryRole: ${file(./serverless.d/roles.yml):kinesisGeolocationDeliveryRole}
-    # lambda role to fetch user usual places from elasticsearch
-    usualPlacesLambdaRole: ${file(./serverless.d/roles.yml):usualPlacesLambdaRole}
+    lambdaConfigurationRole: ${file(./serverless.d/roles.yml):lambdaConfigurationRole}
+    lambdaGetCodesRole: ${file(./serverless.d/roles.yml):lambdaGetCodesRole}
+    lambdaPutCodeRole: ${file(./serverless.d/roles.yml):lambdaPutCodeRole}
