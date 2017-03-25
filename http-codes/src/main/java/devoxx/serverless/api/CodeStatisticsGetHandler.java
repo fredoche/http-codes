@@ -22,20 +22,6 @@ public class CodeStatisticsGetHandler extends AbstractGetHandler {
     @Override
     public AwsProxyResponse doHandle(AwsProxyRequest request) throws Exception {
         Table table = dynamoDB.getTable("HttpCodeStatistics");
-        //
-        //        ItemCollection<ScanOutcome> scanResult = table.scan();
-        //        
-        //        scanResult.get
-        //        ItemCollection<ScanOutcome> scan = table.scan();
-        //        ScanRequest scanRequest = new ScanRequest()
-        //                .withTableName("HttpCodeStatistics");
-        //        
-        //        ScanResult result = dynamoDB.scan(scanRequest);
-        //        List<Item> items = new ArrayList<>();
-        //        for (Item o : scan) {
-        //            items.add(o);
-        //        }
-
         Map<Integer, Integer> res = new HashMap<>();
 
         ItemCollection<ScanOutcome> scan = table.scan();
