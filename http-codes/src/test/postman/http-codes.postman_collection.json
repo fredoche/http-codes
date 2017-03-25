@@ -1,0 +1,62 @@
+{
+	"variables": [],
+	"info": {
+		"name": "http-codes",
+		"_postman_id": "cf02cfc7-2b9d-9397-a852-3e3120f05f9b",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "configuration",
+			"request": {
+				"url": "https://92zdskzmt0.execute-api.eu-west-1.amazonaws.com/dev/configuration",
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "{{x-api-key}}",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "get code",
+			"request": {
+				"url": "https://92zdskzmt0.execute-api.eu-west-1.amazonaws.com/dev/codes",
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "{{x-api-key}}",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "put code",
+			"request": {
+				"url": "https://92zdskzmt0.execute-api.eu-west-1.amazonaws.com/dev/code/302",
+				"method": "PUT",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "{{x-api-key}}",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}
