@@ -35,6 +35,6 @@ public class CodePutHandler extends AbstractGetHandler {
         
         Item item = table.getItem("code", request.getPathParameters().get(code));
 
-        return createSuccessResponse(item.toJSON());
+        return createSuccessResponse("rien");
     }
 }
