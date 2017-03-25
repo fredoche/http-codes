@@ -28,18 +28,15 @@ public class CodePutHandler extends AbstractGetHandler {
 
         Table table = dynamoDB.getTable("HttpCodeStatistics");
 
-        Item item = table.getItem("code", code);
+        final Item item = table.getItem("code", code);
 
         if (item == null) {
-            item = table.putItem(new Item()
+            table.putItem(new Item()
                     .withPrimaryKey("code", code)
                     .withInt("occurences", 0))
                     .getItem();
+            return createSuccessResponse("OK");
         } else {
-//            System.out.println("plop");
-//            item = table.updateItem("code", new AttributeUpdate("occurences").addNumeric(1)).getItem();
-//            System.out.println("plip");
-
             UpdateItemSpec updateItemSpec = new UpdateItemSpec()
                     .withPrimaryKey("code", code)
                     .withReturnValues(ReturnValue.ALL_NEW)
@@ -50,9 +47,7 @@ public class CodePutHandler extends AbstractGetHandler {
                             .withNumber(":val1", 1));
 
             UpdateItemOutcome outcome = table.updateItem(updateItemSpec);
-            item = outcome.getItem();
+            return createSuccessResponse(outcome.getItem().toJSON());
         }
-
-        return createSuccessResponse(item.toJSON());
     }
 }
