@@ -11,8 +11,6 @@ import com.amazonaws.services.dynamodbv2.document.utils.ValueMap;
 import com.amazonaws.services.dynamodbv2.model.ReturnValue;
 import copy.of.com.amazonaws.serverless.proxy.internal.model.AwsProxyRequest;
 import copy.of.com.amazonaws.serverless.proxy.internal.model.AwsProxyResponse;
-import java.util.HashMap;
-import java.util.Map;
 
 public class CodePutHandler extends AbstractGetHandler {
 
