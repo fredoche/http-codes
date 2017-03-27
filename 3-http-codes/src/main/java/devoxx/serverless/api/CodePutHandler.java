@@ -31,7 +31,7 @@ public class CodePutHandler extends AbstractHandler {
         if (item == null) {
             table.putItem(new Item()
                     .withPrimaryKey("code", code)
-                    .withInt("occurences", 0))
+                    .withInt("occurences", 1))
                     .getItem();
             return createSuccessResponse("OK");
         } else {
