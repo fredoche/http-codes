@@ -16,8 +16,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import static devoxx.serverless.model.common.ErrorResponse.fromException;
-import static devoxx.serverless.model.common.MessageResponse.fromMessage;
+import static devoxx.serverless.model.ErrorResponse.fromException;
+import static devoxx.serverless.model.MessageResponse.fromMessage;
 import static java.util.Collections.emptyMap;
 
 abstract class AbstractErrorHandler {

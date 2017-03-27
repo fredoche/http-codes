@@ -1,4 +1,4 @@
-package devoxx.serverless.model.common;
+package devoxx.serverless.model;
 
 import lombok.Data;
 

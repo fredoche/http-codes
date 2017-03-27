@@ -11,8 +11,8 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import copy.of.com.amazonaws.serverless.proxy.internal.model.AwsProxyRequest;
 import copy.of.com.amazonaws.serverless.proxy.internal.model.AwsProxyResponse;
-import static devoxx.serverless.model.common.ErrorResponse.fromException;
-import static devoxx.serverless.model.common.MessageResponse.fromMessage;
+import static devoxx.serverless.model.ErrorResponse.fromException;
+import static devoxx.serverless.model.MessageResponse.fromMessage;
 import java.io.IOException;
 
 import java.io.InputStream;
