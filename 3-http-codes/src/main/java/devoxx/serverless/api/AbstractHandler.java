@@ -9,20 +9,20 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
+import copy.of.com.amazonaws.serverless.proxy.internal.model.AwsProxyRequest;
 import copy.of.com.amazonaws.serverless.proxy.internal.model.AwsProxyResponse;
-import org.apache.log4j.Logger;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
 import static devoxx.serverless.model.common.ErrorResponse.fromException;
 import static devoxx.serverless.model.common.MessageResponse.fromMessage;
+import java.io.IOException;
+
+import java.io.InputStream;
+import java.io.OutputStream;
 import static java.util.Collections.emptyMap;
+import org.apache.log4j.Logger;
 
-abstract class AbstractErrorHandler implements RequestStreamHandler {
+abstract class AbstractHandler implements RequestStreamHandler {
 
-    private final static Logger logger = Logger.getLogger(AbstractErrorHandler.class);
+    private final static Logger logger = Logger.getLogger(AbstractHandler.class);
 
     static final ObjectMapper mapper = new ObjectMapper()
             .registerModule(new ParameterNamesModule())
@@ -31,8 +31,6 @@ abstract class AbstractErrorHandler implements RequestStreamHandler {
             .disable(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES)
             .disable(DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE)
             .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-
-    protected abstract AwsProxyResponse doHandle(InputStream inputStream, Context context) throws Exception;
 
     @Override
     public void handleRequest(InputStream inputStream, OutputStream output, Context context) throws IOException {
@@ -46,6 +44,13 @@ abstract class AbstractErrorHandler implements RequestStreamHandler {
         }
         mapper.writeValue(output, response);
     }
+
+    public AwsProxyResponse doHandle(InputStream inputStream, Context context) throws Exception {
+        AwsProxyRequest request = mapper.readValue(inputStream, AwsProxyRequest.class);
+        return doHandle(request);
+    }
+
+    public abstract AwsProxyResponse doHandle(AwsProxyRequest request) throws Exception;
 
     protected AwsProxyResponse createSuccessResponse(String successMessage) throws JsonProcessingException {
         logger.debug(successMessage);

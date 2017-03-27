@@ -10,7 +10,7 @@ import copy.of.com.amazonaws.serverless.proxy.internal.model.AwsProxyResponse;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CodeStatisticsGetHandler extends AbstractGetHandler {
+public class CodeStatisticsGetHandler extends AbstractHandler {
 
     private final DynamoDB dynamoDB;
 

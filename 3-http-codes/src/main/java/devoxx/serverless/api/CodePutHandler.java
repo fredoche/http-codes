@@ -12,7 +12,7 @@ import com.amazonaws.services.dynamodbv2.model.ReturnValue;
 import copy.of.com.amazonaws.serverless.proxy.internal.model.AwsProxyRequest;
 import copy.of.com.amazonaws.serverless.proxy.internal.model.AwsProxyResponse;
 
-public class CodePutHandler extends AbstractGetHandler {
+public class CodePutHandler extends AbstractHandler {
 
     private final DynamoDB dynamoDB;
 

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.http.HttpStatus;
 
-public class ConfigurationGetHandler extends AbstractGetHandler {
+public class ConfigurationGetHandler extends AbstractHandler {
 
     @Override
     public AwsProxyResponse doHandle(AwsProxyRequest request) throws Exception {
