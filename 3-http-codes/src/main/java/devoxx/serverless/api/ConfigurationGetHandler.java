@@ -24,6 +24,22 @@ public class ConfigurationGetHandler extends AbstractHandler {
             codes.add(f.getInt(f));
         }
 
+        /**
+         * remove broken img for dogs
+         */
+        codes.remove((Integer) 101);
+        codes.remove((Integer) 102);
+        codes.remove((Integer) 205);
+        codes.remove((Integer) 415);
+        codes.remove((Integer) 419);
+        codes.remove((Integer) 505);
+        /**
+         * remove broken img for cat
+         */
+        codes.remove((Integer) 203);
+        codes.remove((Integer) 407);
+        codes.remove((Integer) 501);
+
 //        configuration.setTemplateUrl("https://httpstatusdogs.com/img/_code_.jpg");
         configuration.setTemplateUrl("https://http.cat/_code_");
         configuration.setCodes(codes);
