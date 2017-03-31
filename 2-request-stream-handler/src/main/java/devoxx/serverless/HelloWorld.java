@@ -32,6 +32,7 @@ public class HelloWorld implements RequestStreamHandler {
     public void handleRequest(InputStream input, OutputStream output, Context context) throws IOException {
         AwsProxyRequest request = mapper.readValue(input, AwsProxyRequest.class);
 
+        // devoxx.serverless.HelloWorld
         String firstName = request.getPathParameters().get("firstName");
         final String message = "Bonjour " + firstName + "!";
 
